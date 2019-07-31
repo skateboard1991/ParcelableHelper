@@ -18,7 +18,7 @@ object ParcelableParser {
         val classInput = FileInputStream(classFile)
         val classReader = ClassReader(classInput)
         val classWriter = ClassWriter(COMPUTE_MAXS)
-        val parcelableGenerateVisitor = ParcelableGenerateVisitor(classWriter)
+        val parcelableGenerateVisitor = ParcelableGenerateVisitor(outputFile,classWriter)
         classReader.accept(parcelableGenerateVisitor, SKIP_DEBUG)
         FileUtil.writeToFile(outputFile, classWriter.toByteArray())
     }

@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import java.util.List;
 
 
+
 public class ParcelableDemo{
 
     private String id;

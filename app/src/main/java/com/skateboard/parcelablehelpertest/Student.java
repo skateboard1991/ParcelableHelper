@@ -18,7 +18,7 @@ public class Student implements Parcelable {
     public Student() {
     }
 
-    protected Student(Parcel in) {
+    public Student(Parcel in) {
     }
 
     public static final Parcelable.Creator<Student> CREATOR = new Parcelable.Creator<Student>() {

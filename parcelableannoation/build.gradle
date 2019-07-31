@@ -17,11 +17,11 @@ apply plugin: 'com.novoda.bintray-release'
 
 publish {
     userOrg = 'wuhaoxuan1225'
-    groupId = 'com.skateboard:parcelablehelper'
+    groupId = 'com.skateboard.parcelablehelper'
     artifactId = 'parcelableannoation'
     publishVersion = '1.0.0'
     desc = 'ParcelableHelper corresponding annoation'
-    website = 'https://github.com/skateboard1991/ParcelableHelper'
+    website = 'https://github.com/skateboard1991/ParcelableHelper/tree/master/parcelableannoation'
 }
 
 dependencies {
