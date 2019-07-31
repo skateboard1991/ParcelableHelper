@@ -122,8 +122,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
     }
 
     private fun generateCreatorInnerClass() {
-
-        val innerClassFile = File(classFile.parentFile, "Demo$1.class")
+        val innerClassFile = File(classFile.parentFile, classFile.name.split(".")[0] + "${'$'}1.class")
         if (innerClassFile.exists()) {
             innerClassFile.delete()
         }

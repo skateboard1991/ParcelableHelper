@@ -6,18 +6,18 @@ import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
 
 
-class ParcelableCreatorGenerator(private val classInfo: ClassInfo, private val cv: ClassWriter) {
+class ParcelableCreatorGenerator(private val classInfo:ClassInfo,private val cv: ClassWriter){
 
 
-    fun dump(): ByteArray {
+    fun dump():ByteArray{
 
-        val internalName = classInfo.name + "${'$'}1"
+        val internalName=classInfo.name+"${'$'}1"
 
-        val superClassDescriptor = Type.getObjectType(classInfo.name).descriptor
+        val superClassDescriptor= Type.getObjectType(classInfo.name).descriptor
 
         cv.visit(
             V1_7,
-            ACC_STATIC + ACC_FINAL,
+            ACC_STATIC+ ACC_FINAL,
             internalName,
             "Ljava/lang/Object;Landroid/os/Parcelable${'$'}Creator<${superClassDescriptor}>;",
             "java/lang/Object",
@@ -66,6 +66,48 @@ class ParcelableCreatorGenerator(private val classInfo: ClassInfo, private val c
             mv.visitCode()
             mv.visitVarInsn(ILOAD, 1)
             mv.visitTypeInsn(ANEWARRAY, classInfo.name)
+            mv.visitInsn(ARETURN)
+            mv.visitEnd()
+        }
+//        run {
+//            val mv = cv.visitMethod(
+//                ACC_PUBLIC + ACC_BRIDGE + ACC_SYNTHETIC,
+//                "newArray",
+//                "(I)[Ljava/lang/Object;",
+//                null,
+//                null
+//            )
+//            mv.visitCode()
+//            mv.visitVarInsn(ALOAD, 0)
+//            mv.visitVarInsn(ILOAD, 1)
+//            mv.visitMethodInsn(
+//                INVOKEVIRTUAL,
+//                classInfo.name,
+//                "newArray",
+//                "(I)[$superClassDescriptor",
+//                false
+//            )
+//            mv.visitInsn(ARETURN)
+//            mv.visitEnd()
+//        }
+        run {
+            val mv = cv.visitMethod(
+                ACC_PUBLIC + ACC_BRIDGE + ACC_SYNTHETIC,
+                "createFromParcel",
+                "(Landroid/os/Parcel;)Ljava/lang/Object;",
+                null,
+                null
+            )
+            mv.visitCode()
+            mv.visitVarInsn(ALOAD, 0)
+            mv.visitVarInsn(ALOAD, 1)
+            mv.visitMethodInsn(
+                INVOKEVIRTUAL,
+                internalName,
+                "createFromParcel",
+                "(Landroid/os/Parcel;)$superClassDescriptor",
+                false
+            )
             mv.visitInsn(ARETURN)
             mv.visitEnd()
         }
