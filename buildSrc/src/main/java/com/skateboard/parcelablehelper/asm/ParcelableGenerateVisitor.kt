@@ -26,6 +26,13 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
 
         val PARCELABLE_IGNORE_ANNOATION_NAME = "Lcom/skateboard/parcelableannoation/Ignore"
 
+        val PARCELABLE_CREATOR_DESCRIPTOR = "Landroid/os/Parcelable${'$'}Creator;"
+
+        val PARCELABLE_CREATOR_INTERNALNAME = "android/os/Parcelable${'$'}Creator"
+
+        val PARCELABLE_INTERNALNAME = "android/os/Parcelable"
+
+        val PARCELABLE_DESCRIPTOR = "Landroid/os/Parcelable;"
     }
 
 
@@ -113,7 +120,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
 
         if (isIntrested) {
             generateParcelableImplemation()
-            generateCreator()
+            generateCreatorMember()
             generateDescribeContent()
             generateWriteToParcel()
             generateParcelConstructor()
@@ -134,7 +141,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
     private fun generateParcelableImplemation() {
 
         val newInterfaces = Arrays.copyOf(classInfo.interfaces, (classInfo.interfaces?.size ?: 0) + 1)
-        newInterfaces[newInterfaces.size - 1] = "android/os/Parcelable"
+        newInterfaces[newInterfaces.size - 1] = PARCELABLE_INTERNALNAME
         super.visit(
             classInfo.version,
             classInfo.access,
@@ -145,12 +152,12 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
         )
     }
 
-    private fun generateCreator() {
+    private fun generateCreatorMember() {
 
         cv.visitInnerClass("${classInfo.name}${'$'}1", null, null, Opcodes.ACC_STATIC)
         cv.visitInnerClass(
-            "android/os/Parcelable${'$'}Creator",
-            "android/os/Parcelable",
+            PARCELABLE_CREATOR_INTERNALNAME,
+            PARCELABLE_INTERNALNAME,
             "Creator",
             Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC + Opcodes.ACC_ABSTRACT + Opcodes.ACC_INTERFACE
         )
@@ -158,7 +165,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
         cv.visitField(
             Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC,
             "CREATOR",
-            "Landroid/os/Parcelable${'$'}Creator;",
+            PARCELABLE_CREATOR_DESCRIPTOR,
             "Landroid/os/Parcelable${'$'}Creator<${Type.getObjectType(classInfo.name).descriptor}>;",
             null
         )
@@ -177,7 +184,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
             Opcodes.PUTSTATIC,
             classInfo.name,
             "CREATOR",
-            "Landroid/os/Parcelable${'$'}Creator;"
+            PARCELABLE_CREATOR_DESCRIPTOR
         )
         mv.visitInsn(Opcodes.RETURN)
         mv.visitEnd()
@@ -198,6 +205,9 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
 
         val mv = cv.visitMethod(Opcodes.ACC_PUBLIC, "writeToParcel", "(Landroid/os/Parcel;I)V", null, null)
         mv.visitCode()
+        if ("java/lang/Object" != classInfo.superName) {
+            callSuperWriteToParcel(mv)
+        }
         fieldList.forEach {
             if (it.isIgnore) {
                 return@forEach
@@ -208,6 +218,13 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
         }
         mv.visitInsn(Opcodes.RETURN)
         mv.visitEnd()
+    }
+
+    private fun callSuperWriteToParcel(mv: MethodVisitor) {
+        mv.visitVarInsn(Opcodes.ALOAD, 0)
+        mv.visitVarInsn(Opcodes.ALOAD, 1)
+        mv.visitVarInsn(Opcodes.ILOAD, 2)
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, classInfo.superName, "writeToParcel", "(Landroid/os/Parcel;I)V", true)
     }
 
     private fun generateWriteToParcelStatement(mv: MethodVisitor, fieldInfo: FieldInfo) {
@@ -248,7 +265,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
                 Opcodes.INVOKEVIRTUAL,
                 "android/os/Parcel",
                 "writeTypedArray",
-                "([Landroid/os/Parcelable;I)V",
+                "([${PARCELABLE_DESCRIPTOR}I)V",
                 false
             )
         }
@@ -323,7 +340,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
                 Opcodes.INVOKEVIRTUAL,
                 "android/os/Parcel",
                 "writeParcelable",
-                "(Landroid/os/Parcelable;I)V",
+                "(${PARCELABLE_DESCRIPTOR}I)V",
                 false
             )
         }
@@ -333,8 +350,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
     private fun generateParcelConstructor() {
         val mv = cv.visitMethod(Opcodes.ACC_PROTECTED, "<init>", "(Landroid/os/Parcel;)V", null, null)
         mv.visitCode()
-        mv.visitVarInsn(Opcodes.ALOAD, 0)
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false)
+        callSuperParcelConstructor(mv)
         fieldList.forEach {
             if (it.isIgnore) {
                 return@forEach
@@ -345,6 +361,17 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
         }
         mv.visitInsn(Opcodes.RETURN)
         mv.visitEnd()
+    }
+
+    private fun callSuperParcelConstructor(mv: MethodVisitor) {
+        if ("java/lang/Object" != classInfo.superName) {
+            mv.visitVarInsn(Opcodes.ALOAD, 0)
+            mv.visitVarInsn(Opcodes.ALOAD, 1)
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, classInfo.superName, "<init>", "(Landroid/os/Parcel;)V", false)
+        } else {
+            mv.visitVarInsn(Opcodes.ALOAD, 0)
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, classInfo.superName, "<init>", "()V", false)
+        }
     }
 
     private fun generateParcelConstructorStatement(mv: MethodVisitor, fieldInfo: FieldInfo) {
@@ -378,13 +405,13 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
                 Opcodes.GETSTATIC,
                 Type.getType(fieldInfo.descriptor?.substring(1)).internalName,
                 "CREATOR",
-                "Landroid/os/Parcelable${'$'}Creator;"
+                PARCELABLE_CREATOR_DESCRIPTOR
             )
             mv.visitMethodInsn(
                 Opcodes.INVOKEVIRTUAL,
                 "android/os/Parcel",
                 "createTypedArray",
-                "(Landroid/os/Parcelable${'$'}Creator;)[Ljava/lang/Object;",
+                "($PARCELABLE_CREATOR_DESCRIPTOR)[Ljava/lang/Object;",
                 false
             )
             mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getType(fieldInfo.descriptor).internalName)
@@ -425,13 +452,13 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
                     Opcodes.GETSTATIC,
                     Type.getType(typedDescriptor).internalName,
                     "CREATOR",
-                    "Landroid/os/Parcelable${'$'}Creator;"
+                    PARCELABLE_CREATOR_DESCRIPTOR
                 )
                 mv.visitMethodInsn(
                     Opcodes.INVOKEVIRTUAL,
                     "android/os/Parcel",
                     "createTypedArrayList",
-                    "(Landroid/os/Parcelable${'$'}Creator;)Ljava/util/ArrayList;",
+                    "($PARCELABLE_CREATOR_DESCRIPTOR)Ljava/util/ArrayList;",
                     false
                 )
                 mv.visitFieldInsn(Opcodes.PUTFIELD, classInfo.name, fieldInfo.name, fieldInfo.descriptor)
@@ -463,7 +490,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
                 Opcodes.INVOKEVIRTUAL,
                 "android/os/Parcel",
                 "readParcelable",
-                "(Ljava/lang/ClassLoader;)Landroid/os/Parcelable;",
+                "(Ljava/lang/ClassLoader;)$PARCELABLE_DESCRIPTOR",
                 false
             )
             mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getType(fieldInfo.descriptor).internalName)

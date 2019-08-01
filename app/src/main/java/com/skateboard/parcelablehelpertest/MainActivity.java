@@ -16,8 +16,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Intent intent=new Intent(this,SecondActivity.class);
-        Demo demo=new Demo();
-        demo.setName("hh");
+        ParcelableSonObject demo=new ParcelableSonObject("hh");
+        demo.setSonName("son");
         intent.putExtra("DD", (Parcelable) demo);
         startActivity(intent);
     }
