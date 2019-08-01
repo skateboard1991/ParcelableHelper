@@ -9,7 +9,7 @@ public class SecondActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second2);
-        ParcelableSonObject demo=getIntent().getParcelableExtra("DD");
-        System.out.println("son name is "+demo.getSonName());
+        ParcelableObject demo=getIntent().getParcelableExtra("DD");
+        System.out.println("son name is "+demo.toString());
     }
 }

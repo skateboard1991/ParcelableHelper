@@ -1,24 +1,37 @@
 package com.skateboard.parcelablehelpertest;
 
 import android.os.Parcel;
-import com.skateboard.parcelableannoation.Parcelable;
+import android.os.Parcelable;
 
 
-@Parcelable
-public class ParcelableSonObject extends ParcelableFatherObject{
+public class ParcelableSonObject  implements Parcelable {
 
 
-    private String sonName;
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+    }
 
     public ParcelableSonObject(String name) {
-        super(name);
+
     }
 
-    public String getSonName() {
-        return sonName;
+    public ParcelableSonObject(Parcel in) {
     }
 
-    public void setSonName(String sonName) {
-        this.sonName = sonName;
-    }
+    public static final Parcelable.Creator<ParcelableSonObject> CREATOR = new Parcelable.Creator<ParcelableSonObject>() {
+        @Override
+        public ParcelableSonObject createFromParcel(Parcel source) {
+            return new ParcelableSonObject(source);
+        }
+
+        @Override
+        public ParcelableSonObject[] newArray(int size) {
+            return new ParcelableSonObject[size];
+        }
+    };
 }

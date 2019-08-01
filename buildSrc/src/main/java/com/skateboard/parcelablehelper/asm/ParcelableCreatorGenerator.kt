@@ -7,14 +7,19 @@ import com.skateboard.parcelablehelper.asm.info.Constatns.Companion.PARCEL_DESCR
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.Type
+import com.sun.org.apache.bcel.internal.generic.ARETURN
+import com.sun.org.apache.bcel.internal.generic.INVOKEVIRTUAL
+import com.sun.org.apache.bcel.internal.generic.ILOAD
+import com.sun.org.apache.bcel.internal.generic.ALOAD
 
 
 class ParcelableCreatorGenerator(private val classInfo: ClassInfo, private val cv: ClassWriter) {
 
     val internalName = classInfo.name + "${'$'}1"
 
-    val superClassDescriptor = Type.getObjectType(classInfo.name).descriptor
+    val superClassDescriptor = Type.getObjectType(classInfo.superName).descriptor
 
+    val classDescriptor = Type.getObjectType(classInfo.name).descriptor
 
     fun dump(): ByteArray {
         generateClass()
@@ -59,7 +64,7 @@ class ParcelableCreatorGenerator(private val classInfo: ClassInfo, private val c
         var mv = cv.visitMethod(
             ACC_PUBLIC,
             "createFromParcel",
-            "($PARCEL_DESCRIPTOR)$superClassDescriptor",
+            "($PARCEL_DESCRIPTOR)$classDescriptor",
             null,
             null
         )
@@ -74,7 +79,7 @@ class ParcelableCreatorGenerator(private val classInfo: ClassInfo, private val c
         mv = cv.visitMethod(
             ACC_PUBLIC + ACC_BRIDGE + ACC_SYNTHETIC,
             "createFromParcel",
-            "($PARCEL_DESCRIPTOR)Ljava/lang/Object;",
+            "($PARCEL_DESCRIPTOR)$superClassDescriptor",
             null,
             null
         )
@@ -85,7 +90,7 @@ class ParcelableCreatorGenerator(private val classInfo: ClassInfo, private val c
             INVOKEVIRTUAL,
             internalName,
             "createFromParcel",
-            "($PARCEL_DESCRIPTOR)$superClassDescriptor",
+            "($PARCEL_DESCRIPTOR)$classDescriptor",
             false
         )
         mv.visitInsn(ARETURN)
@@ -93,16 +98,34 @@ class ParcelableCreatorGenerator(private val classInfo: ClassInfo, private val c
     }
 
     private fun generateNewArrayMethod() {
-        val mv = cv.visitMethod(
+        var mv = cv.visitMethod(
             ACC_PUBLIC,
             "newArray",
-            "(I)[$superClassDescriptor",
+            "(I)[$classDescriptor",
             null,
             null
         )
         mv.visitCode()
         mv.visitVarInsn(ILOAD, 1)
         mv.visitTypeInsn(ANEWARRAY, classInfo.name)
+        mv.visitInsn(ARETURN)
+        mv.visitEnd()
+
+
+
+
+        mv =
+            cv.visitMethod(ACC_PUBLIC + ACC_BRIDGE + ACC_SYNTHETIC, "newArray", "(I)[$superClassDescriptor", null, null)
+        mv.visitCode()
+        mv.visitVarInsn(ALOAD, 0)
+        mv.visitVarInsn(ILOAD, 1)
+        mv.visitMethodInsn(
+            INVOKEVIRTUAL,
+            internalName,
+            "newArray",
+            "(I)[$classDescriptor",
+            false
+        )
         mv.visitInsn(ARETURN)
         mv.visitEnd()
     }

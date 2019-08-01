@@ -3,12 +3,20 @@ package com.skateboard.parcelablehelpertest;
 import android.os.Parcel;
 import com.skateboard.parcelableannoation.Parcelable;
 
-@Parcelable
 public class ParcelableFatherObject {
 
     private String fatherName;
 
-    public ParcelableFatherObject(String name){
+    private Demo[] objectArray;
+
+    public ParcelableFatherObject(String name) {
+
+    }
+
+    public ParcelableFatherObject(Parcel parcel) {
+
+        objectArray = parcel.createTypedArray(Demo.CREATOR);
+
 
     }
 

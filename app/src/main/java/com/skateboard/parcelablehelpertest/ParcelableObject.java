@@ -1,13 +1,12 @@
 package com.skateboard.parcelablehelpertest;
 
-import android.os.Parcel;
+import androidx.annotation.NonNull;
 import com.skateboard.parcelableannoation.Parcelable;
 
 import java.util.List;
 
 @Parcelable
 public class ParcelableObject {
-
 
 
     private int id;
@@ -20,7 +19,7 @@ public class ParcelableObject {
 
     private String[] nameArray;
 
-    private List<String> stringList;
+    private List<String> nameList;
 
     private ParcelableObject object;
 
@@ -69,12 +68,12 @@ public class ParcelableObject {
         this.nameArray = nameArray;
     }
 
-    public List<String> getStringList() {
-        return stringList;
+    public List<String> getNameList() {
+        return nameList;
     }
 
-    public void setStringList(List<String> stringList) {
-        this.stringList = stringList;
+    public void setNameList(List<String> nameList) {
+        this.nameList = nameList;
     }
 
     public ParcelableObject getObject() {
@@ -100,4 +99,26 @@ public class ParcelableObject {
     public void setParcelableObjectList(List<ParcelableObject> parcelableObjectList) {
         this.parcelableObjectList = parcelableObjectList;
     }
+
+
+    @NonNull
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("id is ").append(id)
+                .append("ids length is ")
+                .append(ids.length)
+                .append("ids list size is ")
+                .append(idList.size())
+                .append("name is ").append(name)
+                .append("namearray length is ")
+                .append(nameArray.length).append("name list size is ")
+                .append(nameList.size())
+                .append("object array length is").append(objectArray.length)
+                .append("object list size is ").append(parcelableObjectList.size());
+        return builder.toString();
+    }
+
+
+
 }

@@ -74,11 +74,11 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
 
         if (isIntrested) {
             generateParcelableImplemation()
-            generateCreatorMember()
             generateDescribeContent()
             generateWriteToParcel()
             generateParcelConstructor()
             generateCreatorInnerClass()
+            generateCreatorMember()
         }
     }
 
@@ -231,7 +231,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
 
         fieldInfo.signature?.let {
             val typedDescriptor = it.substring(it.indexOf("<") + 1, it.indexOf(">"))
-            println("typeparamer is $typedDescriptor")
+//            println("typeparamer is $typedDescriptor")
             if (BuiltInTypeMap.containsKey(typedDescriptor)) {
                 mv.visitFieldInsn(
                     Opcodes.GETFIELD,
@@ -368,6 +368,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
                 "($PARCELABLE_CREATOR_DESCRIPTOR)[Ljava/lang/Object;",
                 false
             )
+//            mv.visitTypeInsn(Opcodes.CHECKCAST, fieldInfo.descriptor)
             mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getType(fieldInfo.descriptor).internalName)
             mv.visitFieldInsn(Opcodes.PUTFIELD, classInfo.name, fieldInfo.name, "${fieldInfo.descriptor}")
         }
@@ -447,6 +448,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
                 "(Ljava/lang/ClassLoader;)$PARCELABLE_DESCRIPTOR",
                 false
             )
+//            mv.visitTypeInsn(Opcodes.CHECKCAST, fieldInfo.descriptor)
             mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getType(fieldInfo.descriptor).internalName)
             mv.visitFieldInsn(Opcodes.PUTFIELD, classInfo.name, fieldInfo.name, fieldInfo.descriptor)
         }
