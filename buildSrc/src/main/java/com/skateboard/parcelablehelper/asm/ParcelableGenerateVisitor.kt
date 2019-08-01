@@ -1,5 +1,12 @@
 package com.skateboard.parcelablehelper.asm
 
+import com.skateboard.parcelablehelper.asm.info.Constatns.Companion.BuiltInTypeMap
+import com.skateboard.parcelablehelper.asm.info.Constatns.Companion.PARCELABLE_ANNOATION_NAME
+import com.skateboard.parcelablehelper.asm.info.Constatns.Companion.PARCELABLE_CREATOR_DESCRIPTOR
+import com.skateboard.parcelablehelper.asm.info.Constatns.Companion.PARCELABLE_CREATOR_INTERNALNAME
+import com.skateboard.parcelablehelper.asm.info.Constatns.Companion.PARCELABLE_DESCRIPTOR
+import com.skateboard.parcelablehelper.asm.info.Constatns.Companion.PARCELABLE_IGNORE_ANNOATION_NAME
+import com.skateboard.parcelablehelper.asm.info.Constatns.Companion.PARCELABLE_INTERNALNAME
 import com.skateboard.parcelablehelper.asm.info.ClassInfo
 import com.skateboard.parcelablehelper.asm.info.FieldInfo
 import com.skateboard.parcelablehelper.util.FieldInfoUtil
@@ -17,59 +24,6 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
     private lateinit var classInfo: ClassInfo
 
     private var fieldList = mutableListOf<FieldInfo>()
-
-    private var builtInTypeMap = mutableMapOf<String, String>()
-
-    companion object {
-
-        val PARCELABLE_ANNOATION_NAME = "Lcom/skateboard/parcelableannoation/Parcelable;"
-
-        val PARCELABLE_IGNORE_ANNOATION_NAME = "Lcom/skateboard/parcelableannoation/Ignore"
-
-        val PARCELABLE_CREATOR_DESCRIPTOR = "Landroid/os/Parcelable${'$'}Creator;"
-
-        val PARCELABLE_CREATOR_INTERNALNAME = "android/os/Parcelable${'$'}Creator"
-
-        val PARCELABLE_INTERNALNAME = "android/os/Parcelable"
-
-        val PARCELABLE_DESCRIPTOR = "Landroid/os/Parcelable;"
-    }
-
-
-    init {
-        prepareBuiltInTypeMap()
-    }
-
-    private fun prepareBuiltInTypeMap() {
-        builtInTypeMap["B"] = "Byte"
-        builtInTypeMap["[B"] = "ByteArray"
-        builtInTypeMap["I"] = "Int"
-        builtInTypeMap["[I"] = "IntArray"
-        builtInTypeMap["J"] = "Long"
-        builtInTypeMap["[J"] = "LongArray"
-        builtInTypeMap["Z"] = "Boolean"
-        builtInTypeMap["[Z"] = "BooleanArray"
-        builtInTypeMap["F"] = "Float"
-        builtInTypeMap["[F"] = "FloatArray"
-        builtInTypeMap["D"] = "Double"
-        builtInTypeMap["[D"] = "DoubleArray"
-        builtInTypeMap["Ljava/lang/Byte;"] = "Byte"
-        builtInTypeMap["[Ljava/lang/Byte;"] = "ByteArray"
-        builtInTypeMap["Ljava/lang/Integer;"] = "Int"
-        builtInTypeMap["[Ljava/lang/Integer;"] = "IntArray"
-        builtInTypeMap["Ljava/lang/Long;"] = "Long"
-        builtInTypeMap["[Ljava/lang/Long;"] = "LongArray"
-        builtInTypeMap["Ljava/lang/Boolean;"] = "Boolean"
-        builtInTypeMap["[Ljava/lang/Boolean;"] = "BooleanArray"
-        builtInTypeMap["Ljava/lang/Float;"] = "Float"
-        builtInTypeMap["[Ljava/lang/Float;"] = "FloatArray"
-        builtInTypeMap["Ljava/lang/Double;"] = "Double"
-        builtInTypeMap["[Ljava/lang/Double;"] = "DoubleArray"
-        builtInTypeMap["Ljava/lang/String;"] = "String"
-        builtInTypeMap["[Ljava/lang/String;"] = "StringArray"
-        builtInTypeMap["Ljava/io/Serializable;"] = "Serializable"
-        builtInTypeMap["Landroid/os/Parcelable"] = "Parcelable"
-    }
 
     override fun visit(
         version: Int,
@@ -244,12 +198,12 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
 
     private fun generateWriteToParcelArrayField(fieldInfo: FieldInfo, mv: MethodVisitor) {
 
-        if (builtInTypeMap.containsKey(fieldInfo.descriptor)) {
+        if (BuiltInTypeMap.containsKey(fieldInfo.descriptor)) {
             mv.visitFieldInsn(Opcodes.GETFIELD, classInfo.name, fieldInfo.name, fieldInfo.descriptor)
             mv.visitMethodInsn(
                 Opcodes.INVOKEVIRTUAL,
                 "android/os/Parcel",
-                "write${builtInTypeMap[fieldInfo.descriptor]}",
+                "write${BuiltInTypeMap[fieldInfo.descriptor]}",
                 "(${fieldInfo.descriptor})V",
                 false
             )
@@ -278,7 +232,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
         fieldInfo.signature?.let {
             val typedDescriptor = it.substring(it.indexOf("<") + 1, it.indexOf(">"))
             println("typeparamer is $typedDescriptor")
-            if (builtInTypeMap.containsKey(typedDescriptor)) {
+            if (BuiltInTypeMap.containsKey(typedDescriptor)) {
                 mv.visitFieldInsn(
                     Opcodes.GETFIELD,
                     classInfo.name,
@@ -313,7 +267,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
 
     private fun generateWriteToParcelObjectField(fieldInfo: FieldInfo, mv: MethodVisitor) {
 
-        if (builtInTypeMap.containsKey(fieldInfo.descriptor)) {
+        if (BuiltInTypeMap.containsKey(fieldInfo.descriptor)) {
 
             mv.visitFieldInsn(
                 Opcodes.GETFIELD,
@@ -324,7 +278,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
             mv.visitMethodInsn(
                 Opcodes.INVOKEVIRTUAL,
                 "android/os/Parcel",
-                "write${builtInTypeMap[fieldInfo.descriptor]}",
+                "write${BuiltInTypeMap[fieldInfo.descriptor]}",
                 "(${fieldInfo.descriptor})V",
                 false
             )
@@ -390,12 +344,12 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
     }
 
     private fun generateParcelConstructorArrayField(fieldInfo: FieldInfo, mv: MethodVisitor) {
-        if (builtInTypeMap.containsKey(fieldInfo.descriptor)) {
+        if (BuiltInTypeMap.containsKey(fieldInfo.descriptor)) {
 
             mv.visitMethodInsn(
                 Opcodes.INVOKEVIRTUAL,
                 "android/os/Parcel",
-                "create${builtInTypeMap[fieldInfo.descriptor]}",
+                "create${BuiltInTypeMap[fieldInfo.descriptor]}",
                 "()${fieldInfo.descriptor}",
                 false
             )
@@ -423,7 +377,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
         fieldInfo.signature?.let {
             val typedDescriptor = it.substring(it.indexOf("<") + 1, it.indexOf(">"))
             println("typeparamer is $typedDescriptor")
-            if (builtInTypeMap.containsKey(typedDescriptor)) {
+            if (BuiltInTypeMap.containsKey(typedDescriptor)) {
                 mv.visitVarInsn(Opcodes.ALOAD, 0)
                 mv.visitTypeInsn(Opcodes.NEW, "java/util/ArrayList")
                 mv.visitInsn(Opcodes.DUP)
@@ -468,11 +422,11 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
 
 
     private fun generateParcelConstructorObjectField(fieldInfo: FieldInfo, mv: MethodVisitor) {
-        if (builtInTypeMap.containsKey(fieldInfo.descriptor)) {
+        if (BuiltInTypeMap.containsKey(fieldInfo.descriptor)) {
             mv.visitMethodInsn(
                 Opcodes.INVOKEVIRTUAL,
                 "android/os/Parcel",
-                "read${builtInTypeMap[fieldInfo.descriptor]}",
+                "read${BuiltInTypeMap[fieldInfo.descriptor]}",
                 "()${fieldInfo.descriptor}",
                 false
             )
