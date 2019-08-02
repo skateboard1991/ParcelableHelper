@@ -8,12 +8,25 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.novoda:bintray-release:+'
 
     }
 }
 
 
+apply plugin: 'com.novoda.bintray-release'
+
 apply plugin: 'kotlin'
+
+
+publish {
+    userOrg = 'wuhaoxuan1225'
+    groupId = 'com.skateboard.parcelablehelper'
+    artifactId = 'parcelablehelper'
+    publishVersion = '1.0.0'
+    desc = 'A simple AOP tool that helps Android developers quickly implement Parcelable interfaces'
+    website = 'https://github.com/skateboard1991/ParcelableHelper'
+}
 
 repositories {
     mavenCentral()

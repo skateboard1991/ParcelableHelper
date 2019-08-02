@@ -5,7 +5,7 @@ class Constatns {
     companion object{
         val PARCELABLE_ANNOATION_NAME = "Lcom/skateboard/parcelableannoation/Parcelable;"
 
-        val PARCELABLE_IGNORE_ANNOATION_NAME = "Lcom/skateboard/parcelableannoation/Ignore"
+        val PARCELABLE_IGNORE_ANNOATION_DESCRIPTOR = "Lcom/skateboard/parcelableannoation/Ignore;"
 
         val PARCELABLE_CREATOR_DESCRIPTOR = "Landroid/os/Parcelable${'$'}Creator;"
 

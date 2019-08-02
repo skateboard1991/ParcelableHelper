@@ -1,6 +1,7 @@
 package com.skateboard.parcelablehelpertest;
 
 import androidx.annotation.NonNull;
+import com.skateboard.parcelableannoation.Ignore;
 import com.skateboard.parcelableannoation.Parcelable;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 public class ParcelableObject {
 
 
+    @Ignore
     private int id;
 
     private int[] ids;

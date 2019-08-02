@@ -5,7 +5,7 @@ import com.skateboard.parcelablehelper.asm.info.Constatns.Companion.PARCELABLE_A
 import com.skateboard.parcelablehelper.asm.info.Constatns.Companion.PARCELABLE_CREATOR_DESCRIPTOR
 import com.skateboard.parcelablehelper.asm.info.Constatns.Companion.PARCELABLE_CREATOR_INTERNALNAME
 import com.skateboard.parcelablehelper.asm.info.Constatns.Companion.PARCELABLE_DESCRIPTOR
-import com.skateboard.parcelablehelper.asm.info.Constatns.Companion.PARCELABLE_IGNORE_ANNOATION_NAME
+import com.skateboard.parcelablehelper.asm.info.Constatns.Companion.PARCELABLE_IGNORE_ANNOATION_DESCRIPTOR
 import com.skateboard.parcelablehelper.asm.info.Constatns.Companion.PARCELABLE_INTERNALNAME
 import com.skateboard.parcelablehelper.asm.info.ClassInfo
 import com.skateboard.parcelablehelper.asm.info.FieldInfo
@@ -62,7 +62,7 @@ class ParcelableGenerateVisitor(val classFile: File, classWriter: ClassWriter) :
     private inner class ParcelableFieldVisitor(fieldVisitor: FieldVisitor) : FieldVisitor(Opcodes.ASM7, fieldVisitor) {
 
         override fun visitAnnotation(descriptor: String?, visible: Boolean): AnnotationVisitor {
-            if (PARCELABLE_IGNORE_ANNOATION_NAME == descriptor) {
+            if (PARCELABLE_IGNORE_ANNOATION_DESCRIPTOR == descriptor) {
                 fieldList[fieldList.size - 1].isIgnore = true
             }
             return super.visitAnnotation(descriptor, visible)
