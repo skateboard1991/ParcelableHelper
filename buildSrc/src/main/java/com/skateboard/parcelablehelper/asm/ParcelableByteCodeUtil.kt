@@ -19,7 +19,6 @@ object ParcelableByteCodeUtil {
         FileUtil.forceMkdir(output)
         val srcDirPath = input.absolutePath
         val destDirPath = output.absolutePath
-        println("=== transform dir = $srcDirPath, $destDirPath")
         if (input.isDirectory) {
             input.listFiles().forEach {
                 val destFilePath = it.absolutePath.replace(srcDirPath, destDirPath)
@@ -37,7 +36,6 @@ object ParcelableByteCodeUtil {
 
     private fun performClassParse(inputFile: File, outputFile: File) {
         if (inputFile.name.endsWith(".class") && inputFile.name != "R.class" && inputFile.name != "BuildConfig.class" && !inputFile.name.startsWith("R$")) {
-            println("dst name is ${inputFile.name}")
             ParcelableParser.parseClass(inputFile, outputFile)
         } else {
             FileUtil.writeToFile(inputFile, outputFile)

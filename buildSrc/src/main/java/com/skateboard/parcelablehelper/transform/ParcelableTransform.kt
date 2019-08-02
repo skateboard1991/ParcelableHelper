@@ -26,7 +26,7 @@ class ParcelableTransform(private val project: Project) : Transform() {
 
     override fun transform(transformInvocation: TransformInvocation?) {
 
-        println("----------------进入transform了--------------")
+        println("----------------进入ParcelableHelpe Transform--------------")
         transformInvocation?.let { transformInvocation ->
             //遍历input
             transformInvocation.inputs.forEach { transformInput ->
@@ -39,14 +39,12 @@ class ParcelableTransform(private val project: Project) : Transform() {
                     )
 
                     val inputPath = directoryInput.file.absolutePath
-                    println("****************** $inputPath")
-                    println("****************** ${dest.absolutePath}")
                     ParcelableByteCodeUtil.transformDirectoryInput(directoryInput.file, dest)
                 }
 
             }
         }
-        println("--------------结束transform了----------------")
+        println("--------------结束进入ParcelableHelpe Transform----------------")
     }
 
 }
