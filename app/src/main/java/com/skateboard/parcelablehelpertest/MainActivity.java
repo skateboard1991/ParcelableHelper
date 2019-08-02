@@ -29,8 +29,8 @@ public class MainActivity extends AppCompatActivity {
         demo.setNameArray(new String[]{"1", "2", "3"});
         List<String> nameList = new ArrayList<>();
         demo.setNameList(nameList);
-        demo.setObject(new ParcelableObject());
-        demo.setObjectArray(new ParcelableObject[]{new ParcelableObject()});
+        demo.setObject(new Demo());
+        demo.setObjectArray(new Demo[]{new Demo()});
         List<ParcelableObject> objectList = new ArrayList<>();
         objectList.add(new ParcelableObject());
         demo.setParcelableObjectList(objectList);

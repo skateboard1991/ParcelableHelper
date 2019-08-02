@@ -21,9 +21,9 @@ public class ParcelableObject {
 
     private List<String> nameList;
 
-    private ParcelableObject object;
+    private Demo object;
 
-    private ParcelableObject[] objectArray;
+    private Demo[] objectArray;
 
     private List<ParcelableObject> parcelableObjectList;
 
@@ -76,19 +76,19 @@ public class ParcelableObject {
         this.nameList = nameList;
     }
 
-    public ParcelableObject getObject() {
+    public Demo getObject() {
         return object;
     }
 
-    public void setObject(ParcelableObject object) {
+    public void setObject(Demo object) {
         this.object = object;
     }
 
-    public ParcelableObject[] getObjectArray() {
+    public Demo[] getObjectArray() {
         return objectArray;
     }
 
-    public void setObjectArray(ParcelableObject[] objectArray) {
+    public void setObjectArray(Demo[] objectArray) {
         this.objectArray = objectArray;
     }
 
@@ -114,6 +114,7 @@ public class ParcelableObject {
                 .append("namearray length is ")
                 .append(nameArray.length).append("name list size is ")
                 .append(nameList.size())
+                .append("object is ").append(object)
                 .append("object array length is").append(objectArray.length)
                 .append("object list size is ").append(parcelableObjectList.size());
         return builder.toString();
