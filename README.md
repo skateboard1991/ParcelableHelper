@@ -28,12 +28,15 @@ apply plugin: 'parcelablehelper'
 ```
 
 ## 3 add annoation in class
-
+Attributes annotated by @Ignore will not be serialized
 ```
 @Parcelable
 public class Demo {
 
     private String name;
+    
+    @Ignore
+    private String age;
 
 }
 
